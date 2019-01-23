@@ -1,0 +1,9 @@
+sudo: required # need super user level permissions for using Docker
+services:
+  - docker # telling Travis that you need docker to run your script
+
+before_install: # building a tagged image for running our test files
+  - docker build -t leonardosarmentocastro-learning/docker-react -f Dockerfile.dev .
+
+script: # running our development image with "--coverage" so we have a SIGTERM instruction to exit the terminal if everything goes right.
+  - docker run leonardosarmentocastro-learning/docker-react yarn test --coverage
