@@ -7,3 +7,28 @@ before_install: # building a tagged image for running our test files
 
 script: # running our development image with "--coverage" so we have a SIGTERM instruction to exit the terminal if everything goes right.
   - docker run leonardosarmentocastro-learning/docker-react yarn test --coverage
+
+deploy:
+  on:
+    branch: master
+  provider: elasticbeanstalk # Comes out of the box by Travis CI
+  region: "us-east-2" # Can be found on the application URL: "DockerReact-env.u6ewxrjipg.us-east-2.elasticbeanstalk.com"
+  app: "docker-react" # The name we used to create the "elastic beanstalk" application in Amazon
+  # Can be found on the application breadcrumb at the Elastic Beanstalk dashboard
+  # ("All Applications > docker-react  > DockerReact-env (Environment ID: ...")
+  env: "DockerReact-env"
+  # When Travis CI attempts to deploy our application, it will download the source code from git and zip it.
+  # This zip file needs to be stored into a HD inside Amazon called "S3". A HD inside "S3" is reffered as "bucket".
+  # This bucket will be used everytime our application needs to be redeployed (this bucket can be shared across all diferent environments).
+  # Search for it inside "Services > S3" in Amazon.
+  bucket_name: "elasticbeanstalk-us-east-2-629426492535"
+  # By default, this bucket path will be created once you deploy your application for the first time.
+  # And once it is done, a bucket folder will be created using the same name as its "app" name previously specified in this file.
+  bucket_path: "docker-react"
+  ## AWS credentials
+  # You will need to generate an user under Amazon "IAM" for Travis CI, and make sure to take notes of those because they are only show one time.
+  # Also, "attach existing policies directly" to this user. In this case, type "beanstalk" on "filter policies" and select the one which grants full access to it ("AWSElasticBeanstalkFullAccess").
+  # After creating the user and grabbing the values, use them as "secret environment variables" under Travis CI settings, and use their names in this file.
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key:
+    secure: "$AWS_SECRET_ACCESS_KEY"
