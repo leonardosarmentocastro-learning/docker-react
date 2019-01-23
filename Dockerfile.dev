@@ -7,5 +7,10 @@ WORKDIR '/app'
 COPY ./package.json .
 RUN yarn install
 
+# Copy all source files
+# NOTE: Even though on `docker-compose` we are mapping volumes to have hot reloading features working,
+# we need to manually copy all source files so they are available at first instance when CI use it through Docker CLI.
+COPY . .
+
 ## Startup instructions
 CMD ["yarn", "start"]
